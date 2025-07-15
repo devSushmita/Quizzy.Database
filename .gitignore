@@ -1,0 +1,51 @@
+# Ignore Mac system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Ignore log files
+*.log
+
+# Ignore SQL dumps/backups (optional)
+*.bak
+*.sql.gz
+*.sql.zip
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.~*
+
+# Ignore node_modules if you ever use tooling (like sqlfluff with npm)
+node_modules/
+
+# Ignore Python virtual environments
+venv/
+.env
+*.pyc
+__pycache__/
+
+# Ignore Flyway or Liquibase config files if you later add them
+flyway.conf
+liquibase.properties
+
+# Ignore IntelliJ IDEA project files
+.idea/
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore OS or editor lock files
+*.lock
+
+# Ignore test result files
+*.out
+*.err
+
+# Ignore GitHub Codespaces settings
+.devcontainer/
