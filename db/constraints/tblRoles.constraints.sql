@@ -9,7 +9,7 @@ BEGIN
           AND CONSTRAINT_NAME = 'PK_tblRoles'
     ) THEN
         ALTER TABLE `tblRoles`
-        ADD CONSTRAINT `PK_tblRoles` PRIMARY KEY (id);
+        ADD CONSTRAINT `PK_tblRoles` PRIMARY KEY (`id`);
     END IF;
 END;
 
@@ -24,6 +24,6 @@ BEGIN
           AND CONSTRAINT_NAME = 'UQ_tblRoles_name'
     ) THEN
         ALTER TABLE `tblRoles`
-        ADD CONSTRAINT `UQ_tblRoles_name` UNIQUE (name);
+        ADD CONSTRAINT `UQ_tblRoles_name` UNIQUE (`name`);
     END IF;
 END;
