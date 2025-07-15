@@ -1,6 +1,8 @@
--- Check and add PRIMARY KEY if not exists
-DO
+DELIMITER $$
+
+CREATE PROCEDURE usp_tmp_add_constraints_in_tblroles()
 BEGIN
+    -- Check and add PRIMARY KEY if not exists
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.TABLE_CONSTRAINTS
@@ -11,11 +13,8 @@ BEGIN
         ALTER TABLE `tblRoles`
         ADD CONSTRAINT `PK_tblRoles` PRIMARY KEY (`id`);
     END IF;
-END;
 
--- Check and add UNIQUE constraint on name if not exists
-DO
-BEGIN
+    -- Check and add UNIQUE constraint on name if not exists
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.TABLE_CONSTRAINTS
@@ -26,4 +25,12 @@ BEGIN
         ALTER TABLE `tblRoles`
         ADD CONSTRAINT `UQ_tblRoles_name` UNIQUE (`name`);
     END IF;
-END;
+END$$
+
+DELIMITER ;
+
+-- Call the procedure
+CALL usp_tmp_add_constraints_in_tblroles();
+
+-- Drop it if it's a one-time use
+DROP PROCEDURE usp_tmp_add_constraints_in_tblroles;
