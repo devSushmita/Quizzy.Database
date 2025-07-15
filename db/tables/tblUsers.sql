@@ -1,0 +1,11 @@
+CREATE TABLE
+IF NOT EXISTS `tblUsers` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `firstname` VARCHAR(128) NOT NULL,
+    `lastname` VARCHAR(128) NOT NULL,
+    `role_id` INT NOT NULL DEFAULT 2,
+    `email` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(64) NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NULL
+);
