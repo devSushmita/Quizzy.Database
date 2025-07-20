@@ -14,7 +14,7 @@ BEGIN
     DECLARE l_storedprocedure_name VARCHAR(256) DEFAULT 'usp_register_user';
     DECLARE l_sqlstate CHAR(5);
     DECLARE l_error_code INT;
-    DECLARE l_params TEXT DEFAULT 'N/A';
+    DECLARE l_params TEXT;
     DECLARE l_message TEXT;
     SET p_id = -1;
     
