@@ -3,23 +3,24 @@ DROP PROCEDURE IF EXISTS usp_create_topic;
 DELIMITER $$
 
 CREATE PROCEDURE usp_create_topic (
-    IN p_user_id INT,
     IN p_name VARCHAR(512),
+    IN p_created_by INT,
     OUT p_topic_id INT
 )
 BEGIN
     DECLARE l_storedprocedure_name VARCHAR(256) DEFAULT 'usp_create_topic';
     DECLARE l_sqlstate CHAR(5);
     DECLARE l_error_code INT;
-    DECLARE l_params TEXT;
+    DECLARE l_params TEXT DEFAULT 'N/A';
     DECLARE l_message TEXT;
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
+
         SET l_params = CONCAT(
-            'p_user_id=', p_user_id, ', ',
-            'p_name=', p_name
+            'p_name=', p_name, ', ',
+            'p_created_by=', p_created_by
         );
 
         GET DIAGNOSTICS CONDITION 1
@@ -39,7 +40,7 @@ BEGIN
 
     IF ufn_is_admin(p_user_id) THEN
         INSERT INTO tblTopics (`name`, created_by)
-        VALUES (p_name, p_user_id);
+        VALUES (p_name, p_created_by);
 
         SET p_topic_id = LAST_INSERT_ID();
         COMMIT;
