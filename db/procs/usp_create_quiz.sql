@@ -3,10 +3,10 @@ DROP PROCEDURE IF EXISTS usp_create_quiz;
 DELIMITER $$
 
 CREATE PROCEDURE usp_create_quiz (
-    IN p_user_id INT,
-    IN p_name VARCHAR(512),
+    IN p_name VARCHAR(256),
     IN p_topic_id INT,
     IN p_duration INT,
+    IN p_created_by INT,
     IN p_total_questions INT
 )
 BEGIN
@@ -19,8 +19,9 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
+
         SET l_params = CONCAT(
-            'p_user_id=', p_user_id, ', ',
+            'p_created_by=', p_created_by, ', ',
             'p_name=', p_name, ', ',
             'p_topic_id=', p_topic_id, ', ',
             'p_duration=', p_duration, ', ',
@@ -42,9 +43,19 @@ BEGIN
 
     START TRANSACTION;
 
-    IF ufn_is_admin(p_user_id) THEN
-        INSERT INTO tblQuiz (`name`, topic_id, duration, total_questions, created_by)
-        VALUES (p_name, p_topic_id, p_duration, p_total_questions, p_user_id);
+    IF ufn_is_admin(p_created_by) THEN
+        INSERT INTO tblQuiz (
+            `name`,
+            topic_id,
+            duration,
+            total_questions,
+            created_by)
+        VALUES (
+            p_name,
+            p_topic_id,
+            p_duration,
+            p_total_questions,
+            p_created_by);
         COMMIT;
     ELSE
         SET l_message = 'User is not authorized to create quiz';
