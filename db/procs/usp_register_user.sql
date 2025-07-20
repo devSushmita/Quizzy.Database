@@ -16,7 +16,6 @@ BEGIN
     DECLARE l_error_code INT;
     DECLARE l_params TEXT;
     DECLARE l_message TEXT;
-    SET p_id = -1;
     
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -41,9 +40,13 @@ BEGIN
             l_params,
             l_message
         );
+
+        RESIGNAL;
     END;
     
     START TRANSACTION;
+    
+    SET p_user_id = 0;
     
     INSERT INTO tblUsers (
         firstname,
