@@ -1,5 +1,4 @@
-DROP FUNCTION 
-IF EXISTS ufn_is_admin;
+DROP FUNCTION IF EXISTS ufn_is_admin;
 
 DELIMITER $$
 
@@ -8,7 +7,7 @@ RETURNS BOOLEAN
 DETERMINISTIC
 READS SQL DATA
 BEGIN
-	DECLARE l_administrator INT DEFAULT 1;
+    DECLARE l_administrator INT DEFAULT 1;
     DECLARE l_id INT;
 
     SELECT id
