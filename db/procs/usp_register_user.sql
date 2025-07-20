@@ -8,7 +8,7 @@ CREATE PROCEDURE usp_register_user(
     IN p_role_id INT,
     IN p_email VARCHAR(255),
     IN p_password VARCHAR(64),
-    OUT p_id INT
+    OUT p_user_id INT
 )
 BEGIN
     DECLARE l_storedprocedure_name VARCHAR(256) DEFAULT 'usp_register_user';
@@ -60,7 +60,7 @@ BEGIN
         p_password
     );
     
-    SET p_id = LAST_INSERT_ID();
+    SET p_user_id = LAST_INSERT_ID();
     COMMIT;
 END $$
 
