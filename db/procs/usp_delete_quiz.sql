@@ -3,8 +3,8 @@ DROP PROCEDURE IF EXISTS usp_delete_quiz;
 DELIMITER $$
 
 CREATE PROCEDURE usp_delete_quiz(
-    IN p_user_id INT,
-    IN p_quiz_id INT
+    IN p_quiz_id INT,
+    IN p_deleted_by INT
 )
 BEGIN
     DECLARE l_deleted BOOLEAN DEFAULT 1;
@@ -18,7 +18,7 @@ BEGIN
     BEGIN
         ROLLBACK;
         SET l_params = CONCAT(
-            'p_user_id=', p_user_id, ', ',
+            'p_deleted_by=', p_deleted_by, ', ',
             'p_quiz_id=', p_quiz_id
         );
 
@@ -37,11 +37,11 @@ BEGIN
 
     START TRANSACTION;
 
-    IF ufn_is_admin(p_user_id) THEN
+    IF ufn_is_admin(p_deleted_by) THEN
         UPDATE tblQuiz
         SET void = l_deleted,
             updated_at = UTC_TIMESTAMP(),
-            updated_by = p_user_id
+            updated_by = p_deleted_by
         WHERE id = p_quiz_id;
         COMMIT;
     ELSE
