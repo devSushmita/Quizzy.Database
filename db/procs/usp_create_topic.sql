@@ -1,26 +1,23 @@
-DROP PROCEDURE IF EXISTS usp_create_topic;
+DROP PROCEDURE IF EXISTS usp_get_user;
 
 DELIMITER $$
 
-CREATE PROCEDURE usp_create_topic (
-    IN p_name VARCHAR(512),
-    IN p_created_by INT,
-    OUT p_topic_id INT
+CREATE PROCEDURE usp_get_user(
+    IN p_id INT,
+    IN p_email VARCHAR(255)
 )
 BEGIN
-    DECLARE l_storedprocedure_name VARCHAR(256) DEFAULT 'usp_create_topic';
+    DECLARE l_storedprocedure_name VARCHAR(256) DEFAULT 'usp_get_user';
     DECLARE l_sqlstate CHAR(5);
     DECLARE l_error_code INT;
-    DECLARE l_params TEXT DEFAULT 'N/A';
+    DECLARE l_params TEXT;
     DECLARE l_message TEXT;
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        ROLLBACK;
-
-        SET l_params = CONCAT(
-            'p_name=', p_name, ', ',
-            'p_created_by=', p_created_by
+        SET l_params = CONCAT_WS(', ',
+            CONCAT('p_id=', p_id),
+            CONCAT('p_email=', p_email)
         );
 
         GET DIAGNOSTICS CONDITION 1
@@ -35,20 +32,23 @@ BEGIN
             l_message
         );
     END;
-
-    START TRANSACTION;
-
-    IF ufn_is_admin(p_user_id) THEN
-        INSERT INTO tblTopics (`name`, created_by)
-        VALUES (p_name, p_created_by);
-
-        SET p_topic_id = LAST_INSERT_ID();
-        COMMIT;
-    ELSE
-        SET l_message = 'User is not authorized to create topic';
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = l_message;
-    END IF;
-END$$
+    
+    SELECT
+        id,
+        firstname,
+        lastname,
+        role_id,
+        email,
+        `password`,
+        created_at,
+        updated_at
+    FROM tblUsers
+    WHERE (
+        (p_id IS NOT NULL
+        AND id = p_id)
+        OR (p_email IS NOT NULL
+        AND email = p_email)
+    );
+END $$
 
 DELIMITER ;
