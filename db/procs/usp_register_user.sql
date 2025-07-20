@@ -16,11 +16,11 @@ BEGIN
     DECLARE l_error_code INT;
     DECLARE l_params TEXT DEFAULT 'N/A';
     DECLARE l_message TEXT;
+    SET p_id = -1;
     
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
-        SET p_id = -1;
 
         SET l_params = CONCAT(
             'p_firstname=', p_firstname, ', ',
@@ -45,8 +45,20 @@ BEGIN
     
     START TRANSACTION;
     
-    INSERT INTO tblUsers (firstname, lastname, role_id, email, `password`)
-    VALUES (p_firstname, p_lastname, p_role_id, p_email, p_password);
+    INSERT INTO tblUsers (
+        firstname,
+        lastname,
+        role_id,
+        email,
+        `password`
+    )
+    VALUES (
+        p_firstname,
+        p_lastname,
+        p_role_id,
+        p_email,
+        p_password
+    );
     
     SET p_id = LAST_INSERT_ID();
     COMMIT;
