@@ -38,8 +38,14 @@ BEGIN
     START TRANSACTION;
 
     IF ufn_is_admin(p_user_id) THEN
-        INSERT INTO tblTopics (`name`, created_by)
-        VALUES (p_name, p_user_id);
+        INSERT INTO tblTopics (
+            `name`,
+            created_by
+        )
+        VALUES (
+            p_name,
+            p_user_id
+        );
 
         SET p_topic_id = LAST_INSERT_ID();
         COMMIT;
