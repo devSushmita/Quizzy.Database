@@ -11,7 +11,7 @@ CREATE PROCEDURE usp_create_question (
     IN p_option2 VARCHAR(512),
     IN p_option3 VARCHAR(512),
     IN p_option4 VARCHAR(512),
-    IN p_correct_option TINYINT
+    IN p_correct_option TINYINT,
     IN p_created_by INT
 )
 BEGIN
