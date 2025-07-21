@@ -17,6 +17,7 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
+
         SET l_params = CONCAT(
             'p_deleted_by=', p_deleted_by, ', ',
             'p_quiz_id=', p_quiz_id
@@ -33,6 +34,8 @@ BEGIN
             l_params,
             l_message
         );
+
+        RESIGNAL;
     END;
 
     START TRANSACTION;
