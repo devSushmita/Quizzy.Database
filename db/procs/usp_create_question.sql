@@ -54,6 +54,8 @@ BEGIN
             l_params,
             l_message
         );
+
+        RESIGNAL;
     END;
 
     START TRANSACTION;
