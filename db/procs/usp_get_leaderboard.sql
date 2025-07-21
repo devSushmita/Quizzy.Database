@@ -28,6 +28,8 @@ BEGIN
             l_params,
             l_message
         );
+
+        RESIGNAL;
     END;
 
     SET l_tmp_table_name = CONCAT(
