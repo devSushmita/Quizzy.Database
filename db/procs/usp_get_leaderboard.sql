@@ -70,8 +70,7 @@ BEGIN
     ELSE
         SET @sql = CONCAT('
             SELECT t.user_id, u.firstname, u.lastname,
-                   ROUND(AVG(t.per_score), 2) AS overall_score,
-                   COUNT(t.quiz_id) AS attempted_quiz
+                   ROUND(AVG(t.per_score), 2) AS overall_score
             FROM ', l_tmp_table_name, ' t
             INNER JOIN tblUsers u ON t.user_id = u.id
             GROUP BY t.user_id
