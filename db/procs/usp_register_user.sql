@@ -1,5 +1,3 @@
-USE quizzydb;
-
 DROP PROCEDURE IF EXISTS usp_register_user;
 
 DELIMITER $$
@@ -47,7 +45,6 @@ BEGIN
     END;
     
     START TRANSACTION;
-    SET p_user_id = -1;
     
     INSERT INTO tblUsers (
         firstname,
