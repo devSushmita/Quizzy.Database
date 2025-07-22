@@ -38,17 +38,17 @@ BEGIN
             l_sqlstate,
             l_params,
             l_message);
+
+	RESIGNAL;
     END;
 
     START TRANSACTION;
 
-    -- Check the status of the submission
     IF p_status NOT IN (l_submitted, l_auto_submitted) THEN
         SET l_message = 'Invalid p_status; must be 2 (submitted) or 3 (auto-submitted).';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = l_message;
     END IF;
 
-	-- Get submission details
 	SELECT user_id,
         quiz_id,
         status,
@@ -62,7 +62,6 @@ BEGIN
     AND user_id = p_user_id
     AND status = p_status;
 
-    -- No valid submission found
     IF l_submission_user IS NULL THEN
         SET l_message = 'Submission not found.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = l_message;
@@ -70,7 +69,6 @@ BEGIN
 
     SET @score := 0;
 
-    -- Create CTE for configuration and response
     WITH cfg AS (
         SELECT jt_cfg.q_id,
             jt_cfg.marks,
@@ -92,7 +90,6 @@ BEGIN
         )) AS jt_resp
     )
 
-    -- Calculate total score
     SELECT SUM(
         CASE
             WHEN resp.ans_id IS NOT NULL
@@ -105,7 +102,6 @@ BEGIN
     SET l_score = IFNULL(@score, 0);
     SET l_now_utc = UTC_TIMESTAMP();
 
-    -- Update submissions table
     UPDATE tblSubmissions
        SET response     = p_response,
            status       = p_status,
@@ -116,16 +112,19 @@ BEGIN
 
     COMMIT;
 
-    -- Select submission details
-    SELECT id,
+    SELECT
+    	id,
 	user_id,
         quiz_id,
         attempt,
+	configuration,
+	response,
+	started_at,
+    	submitted_at,
+        updated_at,
         status,
         score,
-        total_marks,
-        submitted_at,
-        updated_at
+        total_marks
     FROM tblSubmissions
     WHERE id = p_submission_id;
 END$$
