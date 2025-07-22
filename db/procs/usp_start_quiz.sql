@@ -42,6 +42,8 @@ BEGIN
             l_params,
             l_message
         );
+
+        RESIGNAL;
     END;
 
     START TRANSACTION;
@@ -123,16 +125,15 @@ BEGIN
     COMMIT;
 
     -- Select submission details
-    SELECT id,
+    SELECT
+        id,
         user_id,
         quiz_id,
         attempt,
+        configuration,
         status,
-        score,
         total_marks,
-        started_at,
-        submitted_at,
-        updated_at
+        started_at
     FROM tblSubmissions
     WHERE id = l_new_submission_id;
 
