@@ -125,14 +125,18 @@ BEGIN
     COMMIT;
 
     SELECT
-        id,
-        user_id,
+    	id,
+	    user_id,
         quiz_id,
         attempt,
-        configuration,
+    	configuration,
+    	response,
+    	started_at,
+    	submitted_at,
+        updated_at,
         status,
-        total_marks,
-        started_at
+        score,
+        total_marks
     FROM tblSubmissions
     WHERE id = l_new_submission_id;
 
