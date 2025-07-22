@@ -126,7 +126,7 @@ BEGIN
 
     SELECT
     	id,
-	    user_id,
+    	user_id,
         quiz_id,
         attempt,
     	configuration,
