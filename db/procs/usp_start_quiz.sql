@@ -124,7 +124,6 @@ BEGIN
 
     COMMIT;
 
-    -- Select submission details
     SELECT
         id,
         user_id,
