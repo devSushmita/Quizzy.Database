@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `tblSubmissions` (
     `configuration` JSON NOT NULL,
     `response` JSON NULL,
     `started_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `submitted_at TIMESTAMP NULL,
+    `submitted_at` TIMESTAMP NULL,
     `updated_at` TIMESTAMP NULL,
     `status` TINYINT NOT NULL,
     `score` INT NOT NULL,
