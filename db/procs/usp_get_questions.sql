@@ -1,5 +1,4 @@
 DROP PROCEDURE IF EXISTS usp_get_questions;
-
 DELIMITER $$
 
 CREATE PROCEDURE usp_get_questions (
@@ -32,22 +31,37 @@ BEGIN
     END;
 
     SELECT
-        id,
-        title,
-        `level`,
-        marks,
-        answer_id,
-        topic_id,
-        created_at,
-        updated_at,
-        created_by,
-        updated_by
-    FROM tblQuestions q
-    LEFT JOIN tblOptions o ON o.question_id = q.id
-    AND JSON_ARRAYAGG(JSON_OBJECT('id', o.id, 'value', o.value)) AS options
+        q.id,
+        q.title,
+        q.`level`,
+        q.marks,
+        q.answer_id,
+        q.topic_id,
+        q.created_at,
+        q.updated_at,
+        q.created_by,
+        q.updated_by,
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id',   o.id,
+                'value', o.value
+            )
+        ) AS options
+    FROM tblQuestions AS q
+    LEFT JOIN tblOptions AS o
+      ON o.question_id = q.id
     WHERE FIND_IN_SET(q.id, p_ids)
-    GROUP BY q.id;
-    
+    GROUP BY
+        q.id,
+        q.title,
+        q.`level`,
+        q.marks,
+        q.answer_id,
+        q.topic_id,
+        q.created_at,
+        q.updated_at,
+        q.created_by,
+        q.updated_by;
 END$$
 
 DELIMITER ;
