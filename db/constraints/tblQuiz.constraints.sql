@@ -1,20 +1,20 @@
+DROP PROCEDURE IF EXISTS usp_tmp_add_constraints_in_tblquiz;
+
 DELIMITER $$
 
 CREATE PROCEDURE usp_tmp_add_constraints_in_tblquiz()
 BEGIN
-    -- Add PRIMARY KEY if not exists
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.table_constraints
         WHERE constraint_schema = DATABASE()
           AND table_name = 'tblQuiz'
-          AND constraint_name = 'PK_tblQuiz'
+          AND constraint_type = 'PRIMARY KEY'
     ) THEN
         ALTER TABLE `tblQuiz`
         ADD CONSTRAINT `PK_tblQuiz` PRIMARY KEY (`id`);
     END IF;
 
-    -- Add FOREIGN KEY: topic_id → tblTopics(id)
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.referential_constraints
@@ -26,7 +26,6 @@ BEGIN
         FOREIGN KEY (`topic_id`) REFERENCES `tblTopics`(`id`);
     END IF;
 
-    -- Add FOREIGN KEY: created_by → tblUsers(id)
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.referential_constraints
@@ -38,7 +37,6 @@ BEGIN
         FOREIGN KEY (`created_by`) REFERENCES `tblUsers`(`id`);
     END IF;
 
-    -- Add FOREIGN KEY: updated_by → tblUsers(id)
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.referential_constraints
@@ -53,8 +51,5 @@ END$$
 
 DELIMITER ;
 
--- Call the procedure
 CALL usp_tmp_add_constraints_in_tblquiz();
-
--- Drop procedure after use
-DROP PROCEDURE usp_tmp_add_constraints_in_tblquiz;
+DROP PROCEDURE IF EXISTS usp_tmp_add_constraints_in_tblquiz;
