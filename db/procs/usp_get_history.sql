@@ -6,6 +6,8 @@ CREATE PROCEDURE usp_get_history (
     IN p_user_id INT
 )
 BEGIN
+    DECLARE l_submitted TINYINT DEFAULT 2;
+    DECLARE l_auto_submitted TINYINT DEFAULT 3;
     DECLARE l_storedprocedure_name VARCHAR(256) DEFAULT 'usp_get_history';
     DECLARE l_sqlstate CHAR(5);
     DECLARE l_error_code INT;
@@ -27,24 +29,25 @@ BEGIN
             l_params,
             l_message
         );
+
+        RESIGNAL;
     END;
 
-    IF NOT ufn_is_admin(p_user_id) THEN
-        SELECT
-            id,
-            quiz_id,
-            attempt,
-            response,
-            `status`,
-            score,
-            total_marks
-        FROM tblSubmissions
-        ORDER BY submitted_at DESC;
-    ELSE
-        SET l_message = 'Invalid action for the user';
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = l_message;
-    END IF;
+    SELECT
+        id,
+        quiz_id,
+        attempt,
+        configuration,
+        response,
+        `status`,
+        score,
+        total_marks,
+        started_at,
+        submitted_at
+    FROM tblSubmissions
+    WHERE user_id = p_user_id
+    AND status IN (l_submitted, l_auto_submitted)
+    ORDER BY submitted_at DESC;
 END$$
 
 DELIMITER ;

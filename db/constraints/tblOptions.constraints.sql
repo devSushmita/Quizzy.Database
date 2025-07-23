@@ -1,20 +1,20 @@
+DROP PROCEDURE IF EXISTS usp_tmp_add_constraints_in_tbloptions;
+
 DELIMITER $$
 
 CREATE PROCEDURE usp_tmp_add_constraints_in_tbloptions()
 BEGIN
-    -- Add PRIMARY KEY on id if not exists
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.table_constraints
         WHERE constraint_schema = DATABASE()
           AND table_name = 'tblOptions'
-          AND constraint_name = 'PK_tblOptions'
+          AND constraint_type = 'PRIMARY KEY'
     ) THEN
         ALTER TABLE `tblOptions`
         ADD CONSTRAINT `PK_tblOptions` PRIMARY KEY (`id`);
     END IF;
 
-    -- Add FOREIGN KEY: question_id → tblQuestions(id)
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.referential_constraints
@@ -26,7 +26,6 @@ BEGIN
         FOREIGN KEY (`question_id`) REFERENCES `tblQuestions`(`id`);
     END IF;
 
-    -- Add FOREIGN KEY: created_by → tblUsers(id)
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.referential_constraints
@@ -38,7 +37,6 @@ BEGIN
         FOREIGN KEY (`created_by`) REFERENCES `tblUsers`(`id`);
     END IF;
 
-    -- Add FOREIGN KEY: updated_by → tblUsers(id)
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.referential_constraints
@@ -53,8 +51,5 @@ END$$
 
 DELIMITER ;
 
--- Call the procedure
 CALL usp_tmp_add_constraints_in_tbloptions();
-
--- Drop the procedure if it's temporary
-DROP PROCEDURE usp_tmp_add_constraints_in_tbloptions;
+DROP PROCEDURE IF EXISTS usp_tmp_add_constraints_in_tbloptions;

@@ -49,3 +49,5 @@ liquibase.properties
 
 # Ignore GitHub Codespaces settings
 .devcontainer/
+
+output.sql

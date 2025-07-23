@@ -3,7 +3,6 @@ DROP PROCEDURE IF EXISTS usp_create_question;
 DELIMITER $$
 
 CREATE PROCEDURE usp_create_question (
-    IN p_user_id INT,
     IN p_title VARCHAR(512),
     IN p_level TINYINT,
     IN p_marks INT,
@@ -12,7 +11,8 @@ CREATE PROCEDURE usp_create_question (
     IN p_option2 VARCHAR(512),
     IN p_option3 VARCHAR(512),
     IN p_option4 VARCHAR(512),
-    IN p_correct_option TINYINT
+    IN p_correct_option TINYINT,
+    IN p_created_by INT
 )
 BEGIN
     DECLARE l_easy_level TINYINT DEFAULT 1;
@@ -29,8 +29,8 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
+        
         SET l_params = CONCAT(
-            'p_user_id=', p_user_id, ', ',
             'p_title=', p_title, ', ',
             'p_level=', p_level, ', ',
             'p_marks=', p_marks, ', ',
@@ -39,7 +39,8 @@ BEGIN
             'p_option2=', p_option2, ', ',
             'p_option3=', p_option3, ', ',
             'p_option4=', p_option4, ', ',
-            'p_correct_option=', p_correct_option
+            'p_correct_option=', p_correct_option, ', '
+            'p_created_by=', p_created_by
         );
 
         GET DIAGNOSTICS CONDITION 1
@@ -53,11 +54,13 @@ BEGIN
             l_params,
             l_message
         );
+
+        RESIGNAL;
     END;
 
     START TRANSACTION;
 
-    IF ufn_is_admin(p_user_id) THEN
+    IF ufn_is_admin(p_created_by) THEN
         IF p_marks <= 0 THEN
             SET l_message = 'p_marks should be positive';
             SIGNAL SQLSTATE '45000'
@@ -76,17 +79,32 @@ BEGIN
             SET MESSAGE_TEXT = l_message;
         END IF;
 
-        INSERT INTO tblQuestions (title, `level`, marks, topic_id, created_by)
-        VALUES (p_title, p_level, p_marks, p_topic_id, p_user_id);
+        INSERT INTO tblQuestions (
+            title,
+            `level`,
+            marks,
+            topic_id,
+            created_by
+        )
+        VALUES (
+            p_title,
+            p_level,
+            p_marks,
+            p_topic_id,
+            p_created_by
+        );
 
         SET l_question_id = LAST_INSERT_ID();
 
-        INSERT INTO tblOptions (question_id, `value`, created_by)
+        INSERT INTO tblOptions (
+            question_id,
+            `value`,
+            created_by)
         VALUES
-            (l_question_id, p_option1, p_user_id),
-            (l_question_id, p_option2, p_user_id),
-            (l_question_id, p_option3, p_user_id),
-            (l_question_id, p_option4, p_user_id);
+            (l_question_id, p_option1, p_created_by),
+            (l_question_id, p_option2, p_created_by),
+            (l_question_id, p_option3, p_created_by),
+            (l_question_id, p_option4, p_created_by);
 
         SET l_answer_id = LAST_INSERT_ID() - 4 + p_correct_option;
 

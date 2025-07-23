@@ -1,20 +1,20 @@
+DROP PROCEDURE IF EXISTS usp_tmp_add_constraints_in_tblusers;
+
 DELIMITER $$
 
 CREATE PROCEDURE usp_tmp_add_constraints_in_tblusers()
 BEGIN
-    -- Add PRIMARY KEY if not exists
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.table_constraints
         WHERE constraint_schema = DATABASE()
           AND table_name = 'tblUsers'
-          AND constraint_name = 'PK_tblUsers'
+          AND constraint_type = 'PRIMARY KEY'
     ) THEN
         ALTER TABLE `tblUsers`
         ADD CONSTRAINT `PK_tblUsers` PRIMARY KEY (`id`);
     END IF;
 
-    -- Add UNIQUE constraint on email if not exists
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.table_constraints
@@ -26,7 +26,6 @@ BEGIN
         ADD CONSTRAINT `UQ_tblUsers_email` UNIQUE (`email`);
     END IF;
 
-    -- Add FOREIGN KEY constraint if not exists
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.referential_constraints
@@ -40,8 +39,5 @@ END$$
 
 DELIMITER ;
 
--- Run the procedure
 CALL usp_tmp_add_constraints_in_tblusers();
-
--- Drop it after use if it's temporary
-DROP PROCEDURE usp_tmp_add_constraints_in_tblusers;
+DROP PROCEDURE IF EXISTS usp_tmp_add_constraints_in_tblusers;

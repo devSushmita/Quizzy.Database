@@ -30,7 +30,10 @@ BEGIN
     BEGIN
         ROLLBACK;
 
-        SET l_params = CONCAT('p_user_id=', p_user_id, ', p_quiz_id=', p_quiz_id);
+        SET l_params = CONCAT(
+            'p_user_id=', p_user_id, ', ',
+            'p_quiz_id=', p_quiz_id
+        );
 
         CALL usp_log_error(
             l_storedprocedure_name,
@@ -45,12 +48,15 @@ BEGIN
 
     START TRANSACTION;
 
-    SELECT name, topic_id, duration, total_questions
-      INTO l_quiz_name, l_quiz_topic_id, l_quiz_duration, l_quiz_total_questions
-      FROM tblQuiz
-     WHERE id = p_quiz_id
-       AND void = l_is_voided
-     LIMIT 1;
+    SELECT
+        `name`,
+        topic_id,
+        duration, total_questions
+    INTO l_quiz_name, l_quiz_topic_id, l_quiz_duration, l_quiz_total_questions
+    FROM tblQuiz
+    WHERE id = p_quiz_id
+    AND void = l_is_voided
+    LIMIT 1;
 
     IF l_quiz_name IS NULL THEN
         SET l_message = 'No quiz found with the given p_quiz_id.';
@@ -58,8 +64,8 @@ BEGIN
     END IF;
 
     SELECT COUNT(id) INTO l_available_questions
-      FROM tblQuestions
-     WHERE topic_id = l_quiz_topic_id;
+    FROM tblQuestions
+    WHERE topic_id = l_quiz_topic_id;
 
     IF l_available_questions < l_quiz_total_questions THEN
         SET l_message = CONCAT(
@@ -71,12 +77,12 @@ BEGIN
 
     WITH RandomQuestions AS (
         SELECT id, title, level, marks, answer_id
-          FROM tblQuestions
-         WHERE topic_id = l_quiz_topic_id
-         ORDER BY RAND()
-         LIMIT l_quiz_total_questions
+        FROM tblQuestions
+        WHERE topic_id = l_quiz_topic_id
+        ORDER BY RAND()
+        LIMIT l_quiz_total_questions
     )
-    SELECT JSON_ARRAYAGG(
+    SELECT JSON_ARRAYAGG (
                JSON_OBJECT(
                    'id', id,
                    'title', title,
@@ -84,17 +90,17 @@ BEGIN
                    'marks', marks,
                    'answer_id', answer_id
                )
-           ) AS quiz_configuration,
-           COALESCE(SUM(marks), 0) AS total_marks
-      INTO l_quiz_configuration, l_total_marks
-      FROM RandomQuestions;
+            ) AS quiz_configuration,
+            COALESCE(SUM(marks), 0) AS total_marks
+    INTO l_quiz_configuration, l_total_marks
+    FROM RandomQuestions;
 
     SELECT COALESCE(MAX(attempt), 0)
-      INTO l_last_attempt
-      FROM tblSubmissions
-     WHERE user_id = p_user_id
-       AND quiz_id = p_quiz_id
-       AND status IN (l_submitted, l_auto_submitted);
+    INTO l_last_attempt
+    FROM tblSubmissions
+    WHERE user_id = p_user_id
+    AND quiz_id = p_quiz_id
+    AND status IN (l_submitted, l_auto_submitted);
 
     INSERT INTO tblSubmissions (
         user_id,
@@ -118,17 +124,19 @@ BEGIN
 
     COMMIT;
 
-    -- Select submission details
-    SELECT id,
-        user_id,
+    SELECT
+    	id,
+    	user_id,
         quiz_id,
         attempt,
+    	configuration,
+    	response,
+    	started_at,
+    	submitted_at,
+        updated_at,
         status,
         score,
-        total_marks,
-        started_at,
-        submitted_at,
-        updated_at
+        total_marks
     FROM tblSubmissions
     WHERE id = l_new_submission_id;
 

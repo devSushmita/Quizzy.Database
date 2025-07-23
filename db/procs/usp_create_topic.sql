@@ -3,8 +3,8 @@ DROP PROCEDURE IF EXISTS usp_create_topic;
 DELIMITER $$
 
 CREATE PROCEDURE usp_create_topic (
-    IN p_user_id INT,
     IN p_name VARCHAR(512),
+    IN p_created_by INT,
     OUT p_topic_id INT
 )
 BEGIN
@@ -17,9 +17,10 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
+
         SET l_params = CONCAT(
-            'p_user_id=', p_user_id, ', ',
-            'p_name=', p_name
+            'p_name=', p_name, ', ',
+            'p_created_by=', p_created_by
         );
 
         GET DIAGNOSTICS CONDITION 1
@@ -33,18 +34,19 @@ BEGIN
             l_params,
             l_message
         );
+
+        RESIGNAL;
     END;
 
     START TRANSACTION;
 
-    IF ufn_is_admin(p_user_id) THEN
+    IF ufn_is_admin(p_created_by) THEN
         INSERT INTO tblTopics (
             `name`,
-            created_by
-        )
+            created_by)
         VALUES (
             p_name,
-            p_user_id
+            p_created_by
         );
 
         SET p_topic_id = LAST_INSERT_ID();
