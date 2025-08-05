@@ -7,7 +7,8 @@ CREATE PROCEDURE usp_create_quiz (
     IN p_topic_id INT,
     IN p_duration INT,
     IN p_created_by INT,
-    IN p_total_questions INT
+    IN p_total_questions INT,
+    OUT p_quiz_id INT
 )
 BEGIN
     DECLARE l_storedprocedure_name VARCHAR(256) DEFAULT 'usp_create_quiz';
@@ -58,6 +59,8 @@ BEGIN
             p_duration,
             p_total_questions,
             p_created_by);
+
+        SET p_quiz_id = LAST_INSERT_ID();
         COMMIT;
     ELSE
         SET l_message = 'User is not authorized to create quiz';
