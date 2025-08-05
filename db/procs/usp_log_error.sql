@@ -24,7 +24,7 @@ BEGIN
         ELSE SET l_custom_message = 'Unknown error';
     END CASE;
 
-    INSERT INTO sp_error_log (
+    INSERT INTO tblErrorLogs (
         procedure_name,
         error_code,
         sqlstate_code,
