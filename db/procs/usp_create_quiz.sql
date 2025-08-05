@@ -11,6 +11,7 @@ CREATE PROCEDURE usp_create_quiz (
     OUT p_quiz_id INT
 )
 BEGIN
+    DECLARE BOOLEAN l_is_deleted = FALSE;
     DECLARE l_storedprocedure_name VARCHAR(256) DEFAULT 'usp_create_quiz';
     DECLARE l_sqlstate CHAR(5);
     DECLARE l_error_code INT;
@@ -52,12 +53,14 @@ BEGIN
             topic_id,
             duration,
             total_questions,
+            void,
             created_by)
         VALUES (
             p_name,
             p_topic_id,
             p_duration,
             p_total_questions,
+            l_is_deleted,
             p_created_by);
 
         SET p_quiz_id = LAST_INSERT_ID();
