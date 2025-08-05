@@ -11,7 +11,7 @@ CREATE PROCEDURE usp_create_quiz (
     OUT p_quiz_id INT
 )
 BEGIN
-    DECLARE BOOLEAN l_is_deleted = FALSE;
+    DECLARE l_is_deleted BOOLEAN DEFAULT FALSE;
     DECLARE l_storedprocedure_name VARCHAR(256) DEFAULT 'usp_create_quiz';
     DECLARE l_sqlstate CHAR(5);
     DECLARE l_error_code INT;
